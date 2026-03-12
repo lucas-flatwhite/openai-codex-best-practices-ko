@@ -133,7 +133,8 @@ def parse_paragraph(lines: list[str], start: int) -> tuple[str, int]:
     parts: list[str] = []
     i = start
     while i < len(lines):
-        stripped = lines[i].strip()
+        raw_line = lines[i]
+        stripped = raw_line.strip()
         if not stripped:
             break
         if (
@@ -146,10 +147,24 @@ def parse_paragraph(lines: list[str], start: int) -> tuple[str, int]:
             or re.match(r"^-\s+", stripped)
         ):
             break
-        parts.append(stripped)
+        parts.append(parse_inlines(stripped))
+        if raw_line.endswith("  "):
+            parts.append("<br />")
+        elif i + 1 < len(lines) and lines[i + 1].strip():
+            parts.append(" ")
         i += 1
 
-    return f"<p>{parse_inlines(' '.join(parts))}</p>", i
+    return f"<p>{''.join(parts)}</p>", i
+
+
+def keep_last_words_together(text: str, count: int = 2) -> str:
+    words = text.split()
+    if len(words) <= count:
+        return "&nbsp;".join(html.escape(word) for word in words)
+
+    head = html.escape(" ".join(words[:-count]))
+    tail = "&nbsp;".join(html.escape(word) for word in words[-count:])
+    return f"{head} {tail}"
 
 
 def render_markdown(markdown: str) -> str:
@@ -279,7 +294,7 @@ def render_page(markdown_text: str) -> str:
     article_html = render_markdown(body_markdown)
     nav_html = build_section_nav(body_lines)
     safe_title = html.escape(title or "OpenAI Codex Best Practices")
-    safe_subtitle = html.escape(subtitle)
+    safe_subtitle = keep_last_words_together(subtitle)
     source_link = html.escape(source_url, quote=True)
 
     return f"""<!doctype html>

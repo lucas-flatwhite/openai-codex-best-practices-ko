@@ -1,31 +1,20 @@
-# openai-codex-best-practices-ko
+# OpenAI Codex - Best Practices 한국어
 
-`openai-codex-best-practices.md`를 소스 원고로 사용하는 단일 페이지 GitHub Pages 사이트입니다. 원고가 바뀌면 `scripts/build_site.py`가 HTML을 다시 생성하고, `main` 브랜치에 푸시되면 GitHub Actions가 자동으로 배포합니다.
+이 저장소는 OpenAI의 Codex 학습 문서인 `Best Practices`를 한국어로 읽기 쉽도록 정리하고, 단일 페이지 GitHub Pages 형태로 제공하기 위해 만들어졌습니다. 원문이 전달하는 메시지를 최대한 살리면서도, 한국어 사용자 입장에서 빠르게 훑어보고 다시 찾아보기 쉬운 형태를 목표로 하고 있습니다.
 
-## 파일 구조
+`openai-codex-best-practices.md` 문서는 Codex를 단순한 코드 생성 도구가 아니라, 실제 개발 워크플로우 안에서 함께 일하는 에이전트로 활용하기 위한 실천 방법을 다룹니다. 첫 프롬프트를 어떻게 구성해야 하는지, 복잡한 작업에서 왜 계획 수립이 중요한지, `AGENTS.md`와 설정 파일을 통해 어떻게 일관성을 확보하는지, 테스트와 리뷰를 어떻게 연결해야 하는지, MCP·스킬·자동화를 언제 도입하면 좋은지까지 폭넓게 설명합니다.
 
-- `openai-codex-best-practices.md`: 페이지 원고
-- `scripts/build_site.py`: markdown 원고를 `dist/index.html`로 렌더링
-- `styles.css`: 라이트/다크 모드를 포함한 페이지 스타일
-- `script.js`: 테마 토글과 현재 섹션 하이라이트
-- `.github/workflows/deploy.yml`: GitHub Pages 배포 워크플로우
+이 저장소의 목적은 단순히 번역문을 보관하는 데 있지 않습니다. 문서 원고를 바탕으로 정적 페이지를 생성하고, 라이트/다크 모드를 지원하는 읽기 좋은 문서 경험을 제공하며, `main` 브랜치 변경 시 GitHub Actions를 통해 자동으로 GitHub Pages에 배포되도록 구성해 두었습니다. 즉, 이 저장소는 한국어 문서 아카이브이면서 동시에 지속적으로 갱신 가능한 배포용 문서 프로젝트이기도 합니다.
 
-## 로컬 빌드
+이 문서를 통해 얻으실 수 있는 핵심 가치는 다음과 같습니다.
 
-```bash
-python3 scripts/build_site.py
-```
+- Codex에게 더 좋은 결과를 이끌어내는 프롬프트 구성 방식
+- 복잡한 작업을 계획 중심으로 다루는 방법
+- `AGENTS.md`, `config.toml`, 리뷰 기준처럼 반복되는 지침을 구조화하는 방법
+- 테스트, 검증, diff 리뷰까지 포함한 신뢰 가능한 작업 루프
+- MCP, 스킬, 자동화를 활용해 Codex를 개인 도구가 아니라 팀 워크플로우의 일부로 확장하는 관점
+- 장기 작업과 멀티 에이전트 환경에서 세션을 관리하는 실무 감각
 
-빌드가 끝나면 `dist/index.html`이 생성됩니다.
+Codex를 처음 접하시는 분께는 출발점이 되고, 이미 사용 중이신 분께는 자신의 사용 방식을 점검하고 개선하는 체크리스트가 되어줄 수 있습니다. 특히 “어떻게 프롬프트를 써야 하는가”를 넘어서, “어떻게 Codex를 개발 환경 안에 정착시킬 것인가”라는 질문에 답을 찾고 싶으시다면 이 문서가 도움이 될 것입니다.
 
-## 배포 방식
-
-- `main` 브랜치에 변경 사항이 푸시되면 GitHub Actions가 실행됩니다.
-- 워크플로우는 `dist/`를 GitHub Pages 아티팩트로 업로드하고 배포합니다.
-- 저장소의 GitHub Pages 설정은 `Source: GitHub Actions`로 맞추면 됩니다.
-
-## 콘텐츠 갱신 흐름
-
-1. `openai-codex-best-practices.md`를 수정합니다.
-2. 필요하면 로컬에서 `python3 scripts/build_site.py`로 확인합니다.
-3. `main`에 반영하면 자동으로 새 버전이 배포됩니다.
+현재 사이트의 실제 콘텐츠 소스는 `openai-codex-best-practices.md`이며, 정적 페이지는 `scripts/build_site.py`를 통해 생성됩니다. 저장소에 변경 사항이 반영되면 GitHub Actions가 자동으로 배포를 수행하도록 구성되어 있습니다.

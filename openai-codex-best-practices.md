@@ -289,10 +289,8 @@ Codex를 처음 사용할 때 피해야 할 몇 가지 일반적인 실수들이
 | **테스트 & 리뷰** | 변경 후 테스트, 린트, diff 리뷰까지 Codex에게 요청하라 |
 | **MCP** | 외부 컨텍스트가 필요할 때 MCP로 도구를 연결하라 |
 | **스킬** | 반복되는 워크플로우는 `SKILL.md`로 패키징하라 |
-| **자동화** | 안정적인 워크플로우는 Automations 탭에서 예약하라 |
-| **세션 관리** | 작업당 하나의 스레드, 필요 시 포크 또는 멀티 에이전트 활용 |
-
+| **자동화** | 안정적인 워크플로우는 Automations 탭에서 예약하라 | | **세션 관리** | 작업당 하나의 스레드, 필요 시 포크 또는 멀티 에이전트 활용 |
 ---
 
-*이 문서는 [OpenAI Codex Best Practices](https://developers.openai.com/codex/learn/best-practices) 페이지를 기반으로 작성되었습니다.*
+*이 문서는 [OpenAI Codex Best Practices](https://developers.openai.com/codex/learn/best-practices) 페이지를 기반으로 작성되었습니다.*  
 X [@lucas_flatwhite](https://x.com/lucas_flatwhite)
