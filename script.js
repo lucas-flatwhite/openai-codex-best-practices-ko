@@ -9,9 +9,9 @@ function applyTheme(theme) {
   const dark = theme === "dark";
   if (toggle) {
     toggle.setAttribute("aria-pressed", String(dark));
-    toggle.querySelector(".theme-toggle__label").textContent = dark
-      ? "라이트 모드"
-      : "다크 모드";
+    const nextLabel = dark ? "라이트 모드로 전환" : "다크 모드로 전환";
+    toggle.setAttribute("aria-label", nextLabel);
+    toggle.setAttribute("title", nextLabel);
   }
 }
 
@@ -61,4 +61,3 @@ if (sections.length && "IntersectionObserver" in window) {
   sections.forEach((section) => observer.observe(section));
   setActiveNav(sections[0].id);
 }
-

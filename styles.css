@@ -1,41 +1,43 @@
 :root {
   color-scheme: light;
-  --bg: #f7f1e6;
-  --bg-accent: rgba(153, 92, 44, 0.12);
-  --surface: rgba(255, 252, 246, 0.82);
-  --surface-strong: #fffdf8;
-  --surface-muted: rgba(255, 247, 234, 0.85);
-  --border: rgba(111, 73, 37, 0.18);
-  --text: #22170f;
-  --text-soft: #5f4632;
-  --heading: #1b120c;
-  --accent: #9e4c1d;
-  --accent-strong: #7f3406;
-  --accent-contrast: #fffaf3;
-  --shadow: 0 24px 64px rgba(72, 44, 22, 0.14);
-  --shadow-soft: 0 16px 34px rgba(72, 44, 22, 0.08);
-  --ring: rgba(158, 76, 29, 0.18);
+  --bg: #f7f9fc;
+  --bg-accent: rgba(76, 108, 255, 0.09);
+  --bg-accent-secondary: rgba(34, 197, 156, 0.08);
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-strong: #ffffff;
+  --surface-muted: rgba(244, 247, 252, 0.94);
+  --border: rgba(15, 23, 42, 0.1);
+  --text: #1f2937;
+  --text-soft: #5b677a;
+  --heading: #0f172a;
+  --accent: #2458d3;
+  --accent-strong: #173e96;
+  --accent-contrast: #f8fbff;
+  --shadow: 0 24px 64px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 16px 34px rgba(15, 23, 42, 0.06);
+  --ring: rgba(36, 88, 211, 0.16);
   --font-sans: "SUIT Variable", "Pretendard Variable", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   --font-serif: "Iowan Old Style", "Noto Serif KR", "AppleMyungjo", serif;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #12110f;
-  --bg-accent: rgba(230, 152, 87, 0.12);
-  --surface: rgba(28, 25, 22, 0.88);
-  --surface-strong: #201d19;
-  --surface-muted: rgba(39, 33, 28, 0.9);
-  --border: rgba(243, 198, 156, 0.16);
-  --text: #f2e7d8;
-  --text-soft: #d3bea8;
-  --heading: #fff3e6;
-  --accent: #f3a15e;
-  --accent-strong: #ffbd87;
-  --accent-contrast: #1c140d;
-  --shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-  --shadow-soft: 0 20px 40px rgba(0, 0, 0, 0.28);
-  --ring: rgba(243, 161, 94, 0.24);
+  --bg: #0f1724;
+  --bg-accent: rgba(83, 114, 255, 0.16);
+  --bg-accent-secondary: rgba(45, 212, 191, 0.08);
+  --surface: rgba(18, 26, 38, 0.86);
+  --surface-strong: #121b29;
+  --surface-muted: rgba(26, 37, 53, 0.95);
+  --border: rgba(148, 163, 184, 0.16);
+  --text: #e5edf7;
+  --text-soft: #a9b7c9;
+  --heading: #f8fbff;
+  --accent: #7aa2ff;
+  --accent-strong: #aecaff;
+  --accent-contrast: #101826;
+  --shadow: 0 30px 80px rgba(2, 6, 23, 0.42);
+  --shadow-soft: 0 20px 40px rgba(2, 6, 23, 0.28);
+  --ring: rgba(122, 162, 255, 0.24);
 }
 
 * {
@@ -51,8 +53,8 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(circle at top left, var(--bg-accent), transparent 34%),
-    radial-gradient(circle at bottom right, rgba(22, 101, 88, 0.1), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 40%),
+    radial-gradient(circle at bottom right, var(--bg-accent-secondary), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 40%),
     var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
@@ -65,10 +67,10 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 36px 36px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 80%);
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.14), transparent 82%);
 }
 
 a {
@@ -106,9 +108,8 @@ pre code {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
-  gap: 1.5rem;
+  position: relative;
+  display: block;
   padding: 2rem;
   border: 1px solid var(--border);
   border-radius: 2rem;
@@ -146,6 +147,7 @@ pre code {
   flex-wrap: wrap;
   gap: 0.8rem;
   margin-top: 1.4rem;
+  padding-right: 4.5rem;
 }
 
 .button {
@@ -181,14 +183,7 @@ pre code {
   color: var(--text);
 }
 
-.hero-meta {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-}
-
 .theme-toggle,
-.meta-card,
 .doc-card,
 .side-nav__inner {
   border: 1px solid var(--border);
@@ -198,42 +193,70 @@ pre code {
 }
 
 .theme-toggle {
-  display: inline-flex;
+  position: absolute;
+  top: 1.4rem;
+  right: 1.4rem;
+  display: inline-grid;
+  place-items: center;
   align-items: center;
   justify-content: center;
-  align-self: start;
-  min-height: 3rem;
-  padding: 0 1rem;
-  border-radius: 999px;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border-radius: 50%;
   color: var(--text);
   font: inherit;
   cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.meta-card {
-  margin: 0;
-  padding: 1.15rem;
-  border-radius: 1.5rem;
+.theme-toggle:focus-visible,
+.button:focus-visible,
+.side-nav a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--ring), var(--shadow-soft);
 }
 
-.meta-card div + div {
-  margin-top: 0.9rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--border);
+.theme-toggle__icon {
+  position: absolute;
+  display: inline-grid;
+  place-items: center;
+  inset: 0;
+  transition: opacity 220ms ease, transform 220ms ease;
 }
 
-.meta-card dt {
-  color: var(--text-soft);
-  font-size: 0.84rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.theme-toggle svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
 }
 
-.meta-card dd {
-  margin: 0.28rem 0 0;
-  color: var(--heading);
-  font-size: 1rem;
+.theme-toggle__icon--sun {
+  opacity: 0;
+  transform: scale(0.7) rotate(-18deg);
+}
+
+.theme-toggle__icon--moon {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+[data-theme="dark"] .theme-toggle__icon--sun {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+[data-theme="dark"] .theme-toggle__icon--moon {
+  opacity: 0;
+  transform: scale(0.7) rotate(18deg);
 }
 
 .layout {
@@ -265,7 +288,7 @@ pre code {
 
 .side-nav ol {
   margin: 0;
-  padding-left: 1.25rem;
+  padding-left: 1.4rem;
 }
 
 .side-nav li + li {
@@ -379,7 +402,6 @@ tbody tr:last-child td {
 }
 
 @media (max-width: 960px) {
-  .hero,
   .layout {
     grid-template-columns: 1fr;
   }
@@ -413,6 +435,7 @@ tbody tr:last-child td {
 
   .hero-actions {
     flex-direction: column;
+    padding-right: 0;
   }
 
   .button,
@@ -420,9 +443,15 @@ tbody tr:last-child td {
     width: 100%;
   }
 
+  .theme-toggle {
+    position: static;
+    width: 3rem;
+    margin-bottom: 1rem;
+    margin-left: auto;
+  }
+
   th,
   td {
     min-width: 180px;
   }
 }
-

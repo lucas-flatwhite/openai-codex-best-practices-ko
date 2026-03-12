@@ -1,4 +1,4 @@
-# OpenAI Codex — Best Practices
+# OpenAI Codex - Best Practices
 
 > Getting started with Codex and proven practices for better results
 
@@ -295,3 +295,4 @@ Codex를 처음 사용할 때 피해야 할 몇 가지 일반적인 실수들이
 ---
 
 *이 문서는 [OpenAI Codex Best Practices](https://developers.openai.com/codex/learn/best-practices) 페이지를 기반으로 작성되었습니다.*
+X [@lucas_flatwhite](https://x.com/lucas_flatwhite)

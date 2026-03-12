@@ -4,7 +4,6 @@ from __future__ import annotations
 import html
 import re
 import shutil
-from datetime import datetime
 from pathlib import Path
 
 
@@ -268,7 +267,8 @@ def build_section_nav(lines: list[str]) -> str:
         if label == "목차":
             continue
         slug = slugify(label)
-        items.append(f'<li><a href="#{slug}">{html.escape(label)}</a></li>')
+        nav_label = re.sub(r"^\d+\.\s*", "", label)
+        items.append(f'<li><a href="#{slug}">{html.escape(nav_label)}</a></li>')
 
     return "\n".join(items)
 
@@ -278,7 +278,6 @@ def render_page(markdown_text: str) -> str:
     body_markdown = "\n".join(body_lines)
     article_html = render_markdown(body_markdown)
     nav_html = build_section_nav(body_lines)
-    built_at = datetime.now().strftime("%Y-%m-%d %H:%M")
     safe_title = html.escape(title or "OpenAI Codex Best Practices")
     safe_subtitle = html.escape(subtitle)
     source_link = html.escape(source_url, quote=True)
@@ -299,6 +298,25 @@ def render_page(markdown_text: str) -> str:
   <body>
     <div class="page-shell">
       <header class="hero">
+        <button
+          class="theme-toggle"
+          type="button"
+          data-theme-toggle
+          aria-pressed="false"
+          aria-label="다크 모드로 전환"
+          title="다크 모드로 전환"
+        >
+          <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 3.75v2.5m0 11.5v2.5m8.25-8.25h-2.5m-11.5 0h-2.5m12.485 5.985-1.768-1.768M8.033 8.033 6.265 6.265m11.97 0-1.768 1.768M8.033 15.967l-1.768 1.768M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
+            </svg>
+          </span>
+          <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.515A9 9 0 1 1 14.5 3.5Z" />
+            </svg>
+          </span>
+        </button>
         <div class="hero-copy">
           <p class="eyebrow">OpenAI Developers · Codex</p>
           <h1>{safe_title}</h1>
@@ -307,25 +325,6 @@ def render_page(markdown_text: str) -> str:
             <a class="button primary" href="{source_link}" target="_blank" rel="noreferrer">원문 보기</a>
             <a class="button secondary" href="./openai-codex-best-practices.md">원고 보기</a>
           </div>
-        </div>
-        <div class="hero-meta">
-          <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false">
-            <span class="theme-toggle__label">다크 모드</span>
-          </button>
-          <dl class="meta-card">
-            <div>
-              <dt>문서 형식</dt>
-              <dd>단일 페이지 GitHub Pages</dd>
-            </div>
-            <div>
-              <dt>소스 원고</dt>
-              <dd><code>openai-codex-best-practices.md</code></dd>
-            </div>
-            <div>
-              <dt>최근 빌드</dt>
-              <dd>{html.escape(built_at)}</dd>
-            </div>
-          </dl>
         </div>
       </header>
 
