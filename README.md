@@ -1,6 +1,6 @@
 # OpenAI Codex - Best Practices 한국어
 
-이 저장소는 OpenAI의 Codex 학습 문서인 `Best Practices`를 한국어로 읽기 쉽도록 정리하고, 단일 페이지 GitHub Pages 형태로 제공하기 위해 만들어졌습니다. 원문이 전달하는 메시지를 최대한 살리면서도, 한국어 사용자 입장에서 빠르게 훑어보고 다시 찾아보기 쉬운 형태를 목표로 하고 있습니다.
+이 저장소는 OpenAI의 Codex 학습 문서인 [`Codex Best Practices`](https://developers.openai.com/codex/learn/best-practices)를 한국어로 읽기 쉽도록 정리하고, 단일 페이지 GitHub Pages 형태로 제공하기 위해 만들어졌습니다. 원문이 전달하는 메시지를 최대한 살리면서도, 한국어 사용자 입장에서 빠르게 훑어보고 다시 찾아보기 쉬운 형태를 목표로 하고 있습니다.
 
 `openai-codex-best-practices.md` 문서는 Codex를 단순한 코드 생성 도구가 아니라, 실제 개발 워크플로우 안에서 함께 일하는 에이전트로 활용하기 위한 실천 방법을 다룹니다. 첫 프롬프트를 어떻게 구성해야 하는지, 복잡한 작업에서 왜 계획 수립이 중요한지, `AGENTS.md`와 설정 파일을 통해 어떻게 일관성을 확보하는지, 테스트와 리뷰를 어떻게 연결해야 하는지, MCP·스킬·자동화를 언제 도입하면 좋은지까지 폭넓게 설명합니다.
 

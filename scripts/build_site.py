@@ -4,7 +4,9 @@ from __future__ import annotations
 import html
 import re
 import shutil
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -293,6 +295,7 @@ def render_page(markdown_text: str) -> str:
     body_markdown = "\n".join(body_lines)
     article_html = render_markdown(body_markdown)
     nav_html = build_section_nav(body_lines)
+    built_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
     safe_title = html.escape(title or "OpenAI Codex Best Practices")
     safe_subtitle = keep_last_words_together(subtitle)
     source_link = html.escape(source_url, quote=True)
@@ -340,6 +343,7 @@ def render_page(markdown_text: str) -> str:
             <a class="button primary" href="{source_link}" target="_blank" rel="noreferrer">원문 보기</a>
             <a class="button secondary" href="./openai-codex-best-practices.md">원고 보기</a>
           </div>
+          <p class="build-stamp">마지막 빌드: <time>{html.escape(built_at)}</time></p>
         </div>
       </header>
 

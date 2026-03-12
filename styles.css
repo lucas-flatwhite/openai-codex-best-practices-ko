@@ -140,6 +140,7 @@ pre code {
   margin: 1rem 0 0;
   color: var(--text-soft);
   font-size: 1.06rem;
+  white-space: nowrap;
 }
 
 .hero-actions {
@@ -148,6 +149,17 @@ pre code {
   gap: 0.8rem;
   margin-top: 1.4rem;
   padding-right: 4.5rem;
+}
+
+.build-stamp {
+  margin: 0.95rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+}
+
+.build-stamp time {
+  color: var(--heading);
+  font-weight: 600;
 }
 
 .button {
@@ -436,6 +448,10 @@ tbody tr:last-child td {
   .hero-actions {
     flex-direction: column;
     padding-right: 0;
+  }
+
+  .subtitle {
+    white-space: normal;
   }
 
   .button,
