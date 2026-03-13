@@ -501,16 +501,30 @@ pre code {
   background: var(--callout-bg);
   color: var(--text);
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 0.8rem;
-  align-items: flex-start;
+  align-items: start;
 }
 
 .callout::before {
   content: "💡";
   font-size: 1.1rem;
-  flex-shrink: 0;
   margin-top: 0.1rem;
+}
+
+.callout__content {
+  min-width: 0;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.callout__content > :first-child {
+  margin-top: 0;
+}
+
+.callout__content > :last-child {
+  margin-bottom: 0;
 }
 
 /* ── Tables ── */
@@ -600,25 +614,6 @@ tbody tr:last-child td {
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2;
-}
-
-/* ── Footer ── */
-.site-footer {
-  margin-top: 2rem;
-  padding: 1.5rem 2rem;
-  border-top: 1px solid var(--border);
-  text-align: center;
-  color: var(--text-soft);
-  font-size: 0.88rem;
-}
-
-.site-footer a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.site-footer a:hover {
-  text-decoration: underline;
 }
 
 /* ── Mobile nav toggle ── */

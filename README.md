@@ -15,3 +15,7 @@
 - MCP, 스킬, 자동화를 활용해 Codex를 워크플로우에 정착시키는 관점
 
 사이트의 콘텐츠 소스는 `openai-codex-best-practices.md`이며, 페이지는 `scripts/build_site.py`로 생성됩니다.
+
+배포된 페이지는 다음 주소에서 확인하실 수 있습니다.
+
+- https://lucas-flatwhite.github.io/openai-codex-best-practices-ko/

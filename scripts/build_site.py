@@ -111,7 +111,11 @@ def parse_blockquote(lines: list[str], start: int) -> tuple[str, int]:
         i += 1
 
     content = " ".join(part for part in quote_lines if part)
-    return f'<aside class="callout">{parse_inlines(content)}</aside>', i
+    return (
+        '<aside class="callout"><div class="callout__content">'
+        f"{parse_inlines(content)}</div></aside>",
+        i,
+    )
 
 
 def parse_codeblock(lines: list[str], start: int) -> tuple[str, int]:
@@ -377,10 +381,6 @@ def render_page(markdown_text: str) -> str:
         </article>
       </main>
 
-      <footer class="site-footer">
-        이 문서는 <a href="{source_link}" target="_blank" rel="noreferrer">OpenAI Codex Best Practices</a>를 기반으로 번역되었습니다.
-        · <a href="https://x.com/lucas_flatwhite" target="_blank" rel="noreferrer">@lucas_flatwhite</a>
-      </footer>
     </div>
 
     <button class="back-to-top" type="button" aria-label="맨 위로 이동" title="맨 위로 이동">
