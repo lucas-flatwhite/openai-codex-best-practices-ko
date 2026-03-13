@@ -398,22 +398,9 @@ pre code {
 .side-nav a {
   color: var(--text);
   text-decoration: none;
-  transition: color 150ms ease, padding-left 150ms ease;
   display: block;
   padding: 0.15rem 0;
   font-size: 0.94rem;
-}
-
-.side-nav a:hover {
-  color: var(--accent);
-}
-
-.side-nav a.is-active {
-  color: var(--accent-strong);
-  font-weight: 700;
-  padding-left: 0.3rem;
-  border-left: 2px solid var(--accent);
-  margin-left: -0.3rem;
 }
 
 /* ── Doc card ── */
@@ -746,12 +733,6 @@ tbody tr:last-child td {
   font-size: 1rem;
   display: block;
   padding: 0.3rem 0;
-}
-
-.mobile-nav-drawer a:hover,
-.mobile-nav-drawer a.is-active {
-  color: var(--accent-strong);
-  font-weight: 700;
 }
 
 /* ── Responsive ── */
