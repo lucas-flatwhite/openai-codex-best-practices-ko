@@ -4,6 +4,7 @@ const toggle = document.querySelector("[data-theme-toggle]");
 const navLinks = [...document.querySelectorAll(".side-nav a")];
 const sections = [...document.querySelectorAll(".doc-prose h2[id]")];
 
+/* ── Theme ── */
 function applyTheme(theme) {
   root.dataset.theme = theme;
   const dark = theme === "dark";
@@ -26,13 +27,6 @@ function preferredTheme() {
     : "light";
 }
 
-function setActiveNav(id) {
-  navLinks.forEach((link) => {
-    const active = link.getAttribute("href") === `#${id}`;
-    link.classList.toggle("is-active", active);
-  });
-}
-
 applyTheme(preferredTheme());
 
 toggle?.addEventListener("click", () => {
@@ -40,6 +34,20 @@ toggle?.addEventListener("click", () => {
   window.localStorage.setItem(storageKey, nextTheme);
   applyTheme(nextTheme);
 });
+
+/* ── Active nav tracking ── */
+function setActiveNav(id) {
+  navLinks.forEach((link) => {
+    const active = link.getAttribute("href") === `#${id}`;
+    link.classList.toggle("is-active", active);
+  });
+
+  // Also update mobile nav links
+  document.querySelectorAll(".mobile-nav-drawer a").forEach((link) => {
+    const active = link.getAttribute("href") === `#${id}`;
+    link.classList.toggle("is-active", active);
+  });
+}
 
 if (sections.length && "IntersectionObserver" in window) {
   const observer = new IntersectionObserver(
@@ -61,3 +69,72 @@ if (sections.length && "IntersectionObserver" in window) {
   sections.forEach((section) => observer.observe(section));
   setActiveNav(sections[0].id);
 }
+
+/* ── Reading progress bar ── */
+const progressBar = document.querySelector(".progress-bar");
+
+if (progressBar) {
+  window.addEventListener(
+    "scroll",
+    () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = `${Math.min(progress, 100)}%`;
+    },
+    { passive: true }
+  );
+}
+
+/* ── Back to top ── */
+const backToTop = document.querySelector(".back-to-top");
+
+if (backToTop) {
+  window.addEventListener(
+    "scroll",
+    () => {
+      backToTop.classList.toggle("is-visible", window.scrollY > 400);
+    },
+    { passive: true }
+  );
+
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+/* ── Mobile nav drawer ── */
+const mobileNavToggle = document.querySelector(".mobile-nav-toggle");
+const mobileNavOverlay = document.querySelector(".mobile-nav-overlay");
+const mobileNavClose = document.querySelector(".mobile-nav-close");
+
+function openMobileNav() {
+  if (!mobileNavOverlay) return;
+  mobileNavOverlay.style.pointerEvents = "auto";
+  requestAnimationFrame(() => {
+    mobileNavOverlay.classList.add("is-open");
+  });
+  document.body.style.overflow = "hidden";
+}
+
+function closeMobileNav() {
+  if (!mobileNavOverlay) return;
+  mobileNavOverlay.classList.remove("is-open");
+  document.body.style.overflow = "";
+  setTimeout(() => {
+    mobileNavOverlay.style.pointerEvents = "";
+  }, 300);
+}
+
+mobileNavToggle?.addEventListener("click", openMobileNav);
+mobileNavClose?.addEventListener("click", closeMobileNav);
+
+mobileNavOverlay?.addEventListener("click", (e) => {
+  if (e.target === mobileNavOverlay) {
+    closeMobileNav();
+  }
+});
+
+document.querySelectorAll(".mobile-nav-drawer a").forEach((link) => {
+  link.addEventListener("click", closeMobileNav);
+});

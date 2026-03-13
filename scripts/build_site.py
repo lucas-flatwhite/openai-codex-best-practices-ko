@@ -169,6 +169,13 @@ def keep_last_words_together(text: str, count: int = 2) -> str:
     return f"{head} {tail}"
 
 
+def extract_section_number(text: str) -> str | None:
+    match = re.match(r"^(\d+)\.\s+", text)
+    if match:
+        return match.group(1)
+    return None
+
+
 def render_markdown(markdown: str) -> str:
     lines = markdown.splitlines()
     output: list[str] = []
@@ -200,7 +207,11 @@ def render_markdown(markdown: str) -> str:
 
         if stripped.startswith("## "):
             text = stripped[3:].strip()
-            output.append(f'<h2 id="{slugify(text)}">{parse_inlines(text)}</h2>')
+            section_num = extract_section_number(text)
+            badge = ""
+            if section_num:
+                badge = f'<span class="section-badge">{section_num}</span>'
+            output.append(f'<h2 id="{slugify(text)}">{badge}{parse_inlines(text)}</h2>')
             i += 1
             continue
 
@@ -314,6 +325,8 @@ def render_page(markdown_text: str) -> str:
     <script defer src="./script.js"></script>
   </head>
   <body>
+    <div class="progress-bar" aria-hidden="true"></div>
+
     <div class="page-shell">
       <header class="hero">
         <button
@@ -363,6 +376,39 @@ def render_page(markdown_text: str) -> str:
           </div>
         </article>
       </main>
+
+      <footer class="site-footer">
+        이 문서는 <a href="{source_link}" target="_blank" rel="noreferrer">OpenAI Codex Best Practices</a>를 기반으로 번역되었습니다.
+        · <a href="https://x.com/lucas_flatwhite" target="_blank" rel="noreferrer">@lucas_flatwhite</a>
+      </footer>
+    </div>
+
+    <button class="back-to-top" type="button" aria-label="맨 위로 이동" title="맨 위로 이동">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <path d="M12 19V5m-7 7 7-7 7 7" />
+      </svg>
+    </button>
+
+    <button class="mobile-nav-toggle" type="button" aria-label="목차 열기" title="목차 열기">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
+    <div class="mobile-nav-overlay" aria-hidden="true">
+      <div class="mobile-nav-drawer">
+        <p class="side-nav__title">
+          빠른 이동
+          <button class="mobile-nav-close" type="button" aria-label="닫기">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </p>
+        <ol>
+          {nav_html}
+        </ol>
+      </div>
     </div>
   </body>
 </html>
