@@ -418,15 +418,8 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
 
-  .side-nav__inner {
-    position: static;
-  }
-
-  .side-nav ol {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 0.7rem 1rem;
-    padding-left: 1.1rem;
+  .side-nav {
+    display: none;
   }
 }
 
