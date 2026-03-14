@@ -38,7 +38,7 @@ jobs:
           test -f dist/index.html
           test -f dist/styles.css
           test -f dist/script.js
-          test -f dist/openai-codex-best-practices.md
+          test -f dist/openai-codex-best-practices.ko.md
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
@@ -55,4 +55,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

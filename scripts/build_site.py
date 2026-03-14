@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "openai-codex-best-practices.md"
+SOURCE = ROOT / "docs" / "openai-codex-best-practices.ko.md"
 DIST = ROOT / "dist"
 ASSET_FILES = ["styles.css", "script.js"]
 
@@ -314,6 +314,7 @@ def render_page(markdown_text: str) -> str:
     safe_title = html.escape(title or "OpenAI Codex Best Practices")
     safe_subtitle = keep_last_words_together(subtitle)
     source_link = html.escape(source_url, quote=True)
+    local_copy_link = html.escape(f"./{SOURCE.name}", quote=True)
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -358,7 +359,7 @@ def render_page(markdown_text: str) -> str:
           <p class="subtitle">{safe_subtitle}</p>
           <div class="hero-actions">
             <a class="button primary" href="{source_link}" target="_blank" rel="noreferrer">원문 보기</a>
-            <a class="button secondary" href="./openai-codex-best-practices.md">원고 보기</a>
+            <a class="button secondary" href="{local_copy_link}">원고 보기</a>
           </div>
           <p class="build-stamp">마지막 빌드: <time>{html.escape(built_at)}</time></p>
         </div>
@@ -419,6 +420,8 @@ def main() -> None:
     markdown_text = SOURCE.read_text(encoding="utf-8")
     html_text = render_page(markdown_text)
 
+    if DIST.exists():
+        shutil.rmtree(DIST)
     DIST.mkdir(exist_ok=True)
     (DIST / "index.html").write_text(html_text, encoding="utf-8")
     shutil.copy2(SOURCE, DIST / SOURCE.name)
