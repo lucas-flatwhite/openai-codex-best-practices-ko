@@ -288,8 +288,8 @@ def extract_metadata(lines: list[str]) -> tuple[str, str, str, list[str]]:
     return title, subtitle, source_url, remaining
 
 
-def build_section_nav(lines: list[str]) -> str:
-    items: list[str] = []
+def collect_sections(lines: list[str]) -> list[tuple[str, str]]:
+    sections: list[tuple[str, str]] = []
     for line in lines:
         stripped = line.strip()
         if not stripped.startswith("## "):
@@ -298,23 +298,37 @@ def build_section_nav(lines: list[str]) -> str:
         label = stripped[3:].strip()
         if label == "목차":
             continue
+
         slug = slugify(label)
         nav_label = re.sub(r"^\d+\.\s*", "", label)
-        items.append(f'<li><a href="#{slug}">{html.escape(nav_label)}</a></li>')
+        sections.append((slug, nav_label))
 
-    return "\n".join(items)
+    return sections
+
+
+def build_section_nav(sections: list[tuple[str, str]]) -> str:
+    return "\n".join(
+        f'<li><a href="#{slug}"><span>{html.escape(label)}</span></a></li>'
+        for slug, label in sections
+    )
 
 
 def render_page(markdown_text: str) -> str:
     title, subtitle, source_url, body_lines = extract_metadata(markdown_text.splitlines())
     body_markdown = "\n".join(body_lines)
     article_html = render_markdown(body_markdown)
-    nav_html = build_section_nav(body_lines)
+    sections = collect_sections(body_lines)
+    nav_html = build_section_nav(sections)
     built_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
     safe_title = html.escape(title or "OpenAI Codex Best Practices")
     safe_subtitle = keep_last_words_together(subtitle)
     source_link = html.escape(source_url, quote=True)
     local_copy_link = html.escape(f"./{SOURCE.name}", quote=True)
+    section_count = str(len(sections))
+    feature_labels = [html.escape(label) for _, label in sections[:3]]
+    feature_tags = "\n".join(
+        f'<li class="hero-tag">{label}</li>' for label in feature_labels
+    )
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -331,44 +345,93 @@ def render_page(markdown_text: str) -> str:
   </head>
   <body>
     <div class="progress-bar" aria-hidden="true"></div>
+    <div class="page-backdrop" aria-hidden="true">
+      <div class="page-backdrop__orb page-backdrop__orb--one"></div>
+      <div class="page-backdrop__orb page-backdrop__orb--two"></div>
+      <div class="page-backdrop__mesh"></div>
+    </div>
 
     <div class="page-shell">
       <header class="hero">
-        <button
-          class="theme-toggle"
-          type="button"
-          data-theme-toggle
-          aria-pressed="false"
-          aria-label="다크 모드로 전환"
-          title="다크 모드로 전환"
-        >
-          <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M12 3.75v2.5m0 11.5v2.5m8.25-8.25h-2.5m-11.5 0h-2.5m12.485 5.985-1.768-1.768M8.033 8.033 6.265 6.265m11.97 0-1.768 1.768M8.033 15.967l-1.768 1.768M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
-            </svg>
-          </span>
-          <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.515A9 9 0 1 1 14.5 3.5Z" />
-            </svg>
-          </span>
-        </button>
-        <div class="hero-copy">
-          <p class="eyebrow">OpenAI Developers · Codex</p>
-          <h1>{safe_title}</h1>
-          <p class="subtitle">{safe_subtitle}</p>
-          <div class="hero-actions">
-            <a class="button primary" href="{source_link}" target="_blank" rel="noreferrer">원문 보기</a>
-            <a class="button secondary" href="{local_copy_link}">원고 보기</a>
+        <div class="hero-panel">
+          <div class="hero-bar">
+            <div class="hero-brand">
+              <span class="hero-brand__mark" aria-hidden="true">C</span>
+              <div>
+                <p class="eyebrow">OpenAI Developers · Codex</p>
+                <p class="hero-kicker">Korean Edition</p>
+              </div>
+            </div>
+
+            <button
+              class="theme-toggle"
+              type="button"
+              data-theme-toggle
+              aria-pressed="false"
+              aria-label="다크 모드로 전환"
+              title="다크 모드로 전환"
+            >
+              <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M12 3.75v2.5m0 11.5v2.5m8.25-8.25h-2.5m-11.5 0h-2.5m12.485 5.985-1.768-1.768M8.033 8.033 6.265 6.265m11.97 0-1.768 1.768M8.033 15.967l-1.768 1.768M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
+                </svg>
+              </span>
+              <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.515A9 9 0 1 1 14.5 3.5Z" />
+                </svg>
+              </span>
+            </button>
           </div>
-          <p class="build-stamp">마지막 빌드: <time>{html.escape(built_at)}</time></p>
+
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <p class="hero-label">Operational guide for high-signal Codex work</p>
+              <h1>{safe_title}</h1>
+              <p class="subtitle">{safe_subtitle}</p>
+              <div class="hero-actions">
+                <a class="button primary" href="{source_link}" target="_blank" rel="noreferrer">원문 보기</a>
+                <a class="button secondary" href="{local_copy_link}">원고 보기</a>
+              </div>
+              <ul class="hero-tags">
+                {feature_tags}
+              </ul>
+            </div>
+
+            <aside class="hero-meta" aria-label="문서 개요">
+              <p class="hero-meta__label">문서 개요</p>
+              <dl class="hero-stats">
+                <div>
+                  <dt>Sections</dt>
+                  <dd>{section_count}</dd>
+                </div>
+                <div>
+                  <dt>Format</dt>
+                  <dd>Single page</dd>
+                </div>
+                <div>
+                  <dt>Theme</dt>
+                  <dd>Adaptive</dd>
+                </div>
+              </dl>
+              <p class="hero-note">
+                프롬프트 설계부터 계획, 설정, 검증, MCP, 스킬, 자동화까지 한 번에 읽을 수 있도록 정리한 가이드입니다.
+              </p>
+              <p class="build-stamp">마지막 빌드: <time>{html.escape(built_at)}</time></p>
+            </aside>
+          </div>
         </div>
       </header>
 
       <main class="layout">
         <aside class="side-nav">
           <div class="side-nav__inner">
-            <p class="side-nav__title">빠른 이동</p>
+            <p class="side-nav__eyebrow">Navigator</p>
+            <div class="side-nav__header">
+              <p class="side-nav__title">빠른 이동</p>
+              <span class="side-nav__count">{section_count}</span>
+            </div>
+            <p class="side-nav__description">긴 문서를 섹션 단위로 탐색할 수 있습니다.</p>
             <ol>
               {nav_html}
             </ol>
@@ -376,6 +439,13 @@ def render_page(markdown_text: str) -> str:
         </aside>
 
         <article class="doc-card">
+          <div class="doc-card__header">
+            <p class="doc-card__eyebrow">Guide</p>
+            <div>
+              <h2 class="doc-card__title">문서 본문</h2>
+              <p class="doc-card__description">정제된 읽기 레이아웃과 고정 내비게이션으로 긴 문서도 빠르게 따라갈 수 있게 구성했습니다.</p>
+            </div>
+          </div>
           <div class="doc-prose">
             {article_html}
           </div>
@@ -390,7 +460,7 @@ def render_page(markdown_text: str) -> str:
       </svg>
     </button>
 
-    <button class="mobile-nav-toggle" type="button" aria-label="목차 열기" title="목차 열기">
+    <button class="mobile-nav-toggle" type="button" aria-label="목차 열기" title="목차 열기" aria-expanded="false">
       <svg viewBox="0 0 24 24" focusable="false">
         <path d="M4 6h16M4 12h16M4 18h16" />
       </svg>
@@ -398,14 +468,18 @@ def render_page(markdown_text: str) -> str:
 
     <div class="mobile-nav-overlay" aria-hidden="true">
       <div class="mobile-nav-drawer">
-        <p class="side-nav__title">
-          빠른 이동
+        <div class="mobile-nav-drawer__header">
+          <div>
+            <p class="side-nav__eyebrow">Navigator</p>
+            <p class="side-nav__title">빠른 이동</p>
+          </div>
           <button class="mobile-nav-close" type="button" aria-label="닫기">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           </button>
-        </p>
+        </div>
+        <p class="side-nav__description">문서 섹션 {section_count}개</p>
         <ol>
           {nav_html}
         </ol>
