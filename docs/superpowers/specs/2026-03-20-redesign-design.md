@@ -68,6 +68,11 @@
 
 ### 타이포그래피
 
+**폰트 로딩:** Pretendard Variable은 jsDelivr CDN에서 dynamic subset으로 로드한다. `build_site.py`의 `<head>` 템플릿에 아래 `<link>`를 추가한다:
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+```
+
 **폰트 패밀리:**
 ```css
 --font-sans: "Pretendard Variable", Pretendard,
@@ -146,7 +151,7 @@
 - `transition: 150ms ease`
 
 ### 4-9. "맨 위로" 버튼
-- shadcn Button 스타일: `--foreground` 배경, 흰 텍스트, `border-radius: 8px`
+- shadcn Button 스타일: `--accent` 배경, 흰 텍스트, `border-radius: 8px`
 - `420px` 이상 스크롤 시 노출 (현재 script.js 로직 유지)
 
 ### 4-10. Footer
@@ -182,14 +187,14 @@
 | 파일 | 변경 내용 |
 |------|-----------|
 | `styles.css` | 완전 재작성 — shadcn 토큰 기반 |
-| `script.js` | 모바일 드로어 관련 코드 제거, 나머지 유지 |
-| `build_site.py` | Hero 섹션 HTML 구조 수정, top bar 마크업 추가, footer 구조 수정 |
+| `script.js` | 사이드바 네비게이션 활성화 로직 (`navLinks`, `activateNavLink`, `IntersectionObserver`, `resize` 리스너) 및 모바일 드로어 코드 전체 제거. 스크롤 진행바 / 다크모드 / 맨위로 버튼 로직 유지. |
+| `build_site.py` | `.side-nav` 블록 및 2단 구조(`.hero-meta`, `.doc-card`) 제거, 단일 컬럼 구조로 HTML 템플릿 재작성. `<head>`에 Pretendard CDN `<link>` 추가. `slugify`, `parse_inlines`, `parse_table` 등 파싱 함수는 변경하지 않음. |
 
 ---
 
 ## 8. 성공 기준
 
-- "AI가 만든 느낌"이 나지 않는다
+- Hero 섹션에 그라디언트 mesh, animated orb 등 과한 장식 요소를 사용하지 않는다
 - 사이드바/드로어 등 분리된 UI 요소가 없다
 - shadcn 디자인 토큰 네이밍을 그대로 따른다
 - 라이트/다크 모드 모두 작동한다
