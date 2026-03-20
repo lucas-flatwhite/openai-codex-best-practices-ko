@@ -183,6 +183,7 @@ def extract_section_number(text: str) -> str | None:
 def render_markdown(markdown: str) -> str:
     lines = markdown.splitlines()
     output: list[str] = []
+    section_counter = 0
     i = 0
 
     while i < len(lines):
@@ -211,11 +212,13 @@ def render_markdown(markdown: str) -> str:
 
         if stripped.startswith("## "):
             text = stripped[3:].strip()
-            section_num = extract_section_number(text)
+            display_text = re.sub(r"^\d+\.\s+", "", text)
             badge = ""
-            if section_num:
-                badge = f'<span class="section-badge">{section_num}</span>'
-            output.append(f'<h2 id="{slugify(text)}">{badge}{parse_inlines(text)}</h2>')
+            skip_labels = {"목차", "요약"}
+            if display_text not in skip_labels:
+                section_counter += 1
+                badge = f'<span class="section-badge">{section_counter}</span>'
+            output.append(f'<h2 id="{slugify(text)}">{badge}{parse_inlines(display_text)}</h2>')
             i += 1
             continue
 
@@ -288,47 +291,15 @@ def extract_metadata(lines: list[str]) -> tuple[str, str, str, list[str]]:
     return title, subtitle, source_url, remaining
 
 
-def collect_sections(lines: list[str]) -> list[tuple[str, str]]:
-    sections: list[tuple[str, str]] = []
-    for line in lines:
-        stripped = line.strip()
-        if not stripped.startswith("## "):
-            continue
-
-        label = stripped[3:].strip()
-        if label == "목차":
-            continue
-
-        slug = slugify(label)
-        nav_label = re.sub(r"^\d+\.\s*", "", label)
-        sections.append((slug, nav_label))
-
-    return sections
-
-
-def build_section_nav(sections: list[tuple[str, str]]) -> str:
-    return "\n".join(
-        f'<li><a href="#{slug}"><span>{html.escape(label)}</span></a></li>'
-        for slug, label in sections
-    )
-
-
 def render_page(markdown_text: str) -> str:
     title, subtitle, source_url, body_lines = extract_metadata(markdown_text.splitlines())
     body_markdown = "\n".join(body_lines)
     article_html = render_markdown(body_markdown)
-    sections = collect_sections(body_lines)
-    nav_html = build_section_nav(sections)
     built_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
     safe_title = html.escape(title or "OpenAI Codex Best Practices")
     safe_subtitle = keep_last_words_together(subtitle)
     source_link = html.escape(source_url, quote=True)
     local_copy_link = html.escape(f"./{SOURCE.name}", quote=True)
-    section_count = str(len(sections))
-    feature_labels = [html.escape(label) for _, label in sections[:3]]
-    feature_tags = "\n".join(
-        f'<li class="hero-tag">{label}</li>' for label in feature_labels
-    )
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -340,151 +311,78 @@ def render_page(markdown_text: str) -> str:
       name="description"
       content="OpenAI Codex Best Practices 한국어 문서를 읽기 편한 단일 페이지 형태로 제공하는 GitHub Pages 사이트입니다."
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+    />
     <link rel="stylesheet" href="./styles.css" />
     <script defer src="./script.js"></script>
   </head>
   <body>
-    <div class="progress-bar" aria-hidden="true"></div>
-    <div class="page-backdrop" aria-hidden="true">
-      <div class="page-backdrop__orb page-backdrop__orb--one"></div>
-      <div class="page-backdrop__orb page-backdrop__orb--two"></div>
-      <div class="page-backdrop__mesh"></div>
-    </div>
+    <header class="top-bar">
+      <div class="top-bar__inner">
+        <span class="top-bar__title">{safe_title}</span>
+        <button
+          class="theme-toggle"
+          type="button"
+          data-theme-toggle
+          aria-pressed="false"
+          aria-label="다크 모드로 전환"
+          title="다크 모드로 전환"
+        >
+          <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 3.75v2.5m0 11.5v2.5m8.25-8.25h-2.5m-11.5 0h-2.5m12.485 5.985-1.768-1.768M8.033 8.033 6.265 6.265m11.97 0-1.768 1.768M8.033 15.967l-1.768 1.768M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
+            </svg>
+          </span>
+          <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.515A9 9 0 1 1 14.5 3.5Z" />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div class="progress-bar" aria-hidden="true"></div>
+    </header>
 
-    <div class="page-shell">
-      <header class="hero">
-        <div class="hero-panel">
-          <div class="hero-bar">
-            <div class="hero-brand">
-              <span class="hero-brand__mark" aria-hidden="true">C</span>
-              <div>
-                <p class="eyebrow">OpenAI Developers · Codex</p>
-                <p class="hero-kicker">Korean Edition</p>
-              </div>
-            </div>
-
-            <button
-              class="theme-toggle"
-              type="button"
-              data-theme-toggle
-              aria-pressed="false"
-              aria-label="다크 모드로 전환"
-              title="다크 모드로 전환"
-            >
-              <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 3.75v2.5m0 11.5v2.5m8.25-8.25h-2.5m-11.5 0h-2.5m12.485 5.985-1.768-1.768M8.033 8.033 6.265 6.265m11.97 0-1.768 1.768M8.033 15.967l-1.768 1.768M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
-                </svg>
-              </span>
-              <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.515A9 9 0 1 1 14.5 3.5Z" />
-                </svg>
-              </span>
-            </button>
-          </div>
-
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <p class="hero-label">Operational guide for high-signal Codex work</p>
-              <h1>{safe_title}</h1>
-              <p class="subtitle">{safe_subtitle}</p>
-              <div class="hero-actions">
-                <a class="button primary" href="{source_link}" target="_blank" rel="noreferrer">원문 보기</a>
-                <a class="button secondary" href="{local_copy_link}">원고 보기</a>
-              </div>
-              <ul class="hero-tags">
-                {feature_tags}
-              </ul>
-            </div>
-
-            <aside class="hero-meta" aria-label="문서 개요">
-              <p class="hero-meta__label">문서 개요</p>
-              <dl class="hero-stats">
-                <div>
-                  <dt>Sections</dt>
-                  <dd>{section_count}</dd>
-                </div>
-                <div>
-                  <dt>Format</dt>
-                  <dd>Single page</dd>
-                </div>
-                <div>
-                  <dt>Theme</dt>
-                  <dd>Adaptive</dd>
-                </div>
-              </dl>
-              <p class="hero-note">
-                프롬프트 설계부터 계획, 설정, 검증, MCP, 스킬, 자동화까지 한 번에 읽을 수 있도록 정리한 가이드입니다.
-              </p>
-              <p class="build-stamp">마지막 빌드: <time>{html.escape(built_at)}</time></p>
-            </aside>
-          </div>
+    <main class="main">
+      <article class="article">
+        <div class="hero">
+          <span class="hero__badge">OpenAI Codex</span>
+          <h1 class="hero__title">{safe_title}</h1>
+          <p class="hero__subtitle">{safe_subtitle}</p>
+          <p class="hero__meta">
+            원문:
+            <a href="{source_link}" target="_blank" rel="noreferrer">platform.openai.com</a>
+            &nbsp;·&nbsp; 빌드: <time>{html.escape(built_at)}</time>
+          </p>
         </div>
-      </header>
+        <hr class="hero__divider" />
+        <div class="prose">
+          {article_html}
+        </div>
+      </article>
+    </main>
 
-      <main class="layout">
-        <aside class="side-nav">
-          <div class="side-nav__inner">
-            <p class="side-nav__eyebrow">Navigator</p>
-            <div class="side-nav__header">
-              <p class="side-nav__title">빠른 이동</p>
-              <span class="side-nav__count">{section_count}</span>
-            </div>
-            <p class="side-nav__description">긴 문서를 섹션 단위로 탐색할 수 있습니다.</p>
-            <ol>
-              {nav_html}
-            </ol>
-          </div>
-        </aside>
-
-        <article class="doc-card">
-          <div class="doc-card__header">
-            <p class="doc-card__eyebrow">Guide</p>
-            <div>
-              <h2 class="doc-card__title">문서 본문</h2>
-              <p class="doc-card__description">정제된 읽기 레이아웃과 고정 내비게이션으로 긴 문서도 빠르게 따라갈 수 있게 구성했습니다.</p>
-            </div>
-          </div>
-          <div class="doc-prose">
-            {article_html}
-          </div>
-        </article>
-      </main>
-
-    </div>
+    <footer class="footer">
+      <div class="footer__inner">
+        <a href="{source_link}" target="_blank" rel="noreferrer">원문 보기</a>
+        <span class="footer__sep">·</span>
+        <a href="{local_copy_link}">원고 (마크다운)</a>
+        <span class="footer__sep">·</span>
+        <time>빌드 {html.escape(built_at)}</time>
+      </div>
+    </footer>
 
     <button class="back-to-top" type="button" aria-label="맨 위로 이동" title="맨 위로 이동">
       <svg viewBox="0 0 24 24" focusable="false">
         <path d="M12 19V5m-7 7 7-7 7 7" />
       </svg>
     </button>
-
-    <button class="mobile-nav-toggle" type="button" aria-label="목차 열기" title="목차 열기" aria-expanded="false">
-      <svg viewBox="0 0 24 24" focusable="false">
-        <path d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-
-    <div class="mobile-nav-overlay" aria-hidden="true">
-      <div class="mobile-nav-drawer">
-        <div class="mobile-nav-drawer__header">
-          <div>
-            <p class="side-nav__eyebrow">Navigator</p>
-            <p class="side-nav__title">빠른 이동</p>
-          </div>
-          <button class="mobile-nav-close" type="button" aria-label="닫기">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <p class="side-nav__description">문서 섹션 {section_count}개</p>
-        <ol>
-          {nav_html}
-        </ol>
-      </div>
-    </div>
   </body>
 </html>
 """
