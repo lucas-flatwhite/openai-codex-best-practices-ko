@@ -56,13 +56,13 @@
 
 | 토큰 | 라이트 | 다크 |
 |------|--------|------|
-| `--background` | `#ffffff` | `#09090b` |
+| `--background` | `#ffffff` | `#111318` |
 | `--foreground` | `#09090b` | `#fafafa` |
-| `--muted` | `#f4f4f5` | `#27272a` |
+| `--muted` | `#f4f4f5` | `#1b1f27` |
 | `--muted-foreground` | `#71717a` | `#a1a1aa` |
-| `--border` | `#e4e4e7` | `#27272a` |
+| `--border` | `#e4e4e7` | `#2a3040` |
 | `--accent` | `#6366f1` | `#818cf8` |
-| `--accent-muted` | `#eef2ff` | `#1e1b4b` |
+| `--accent-muted` | `#eef2ff` | `#20264d` |
 
 포인트 컬러는 **인디고 (`#6366f1`)** — 기술 문서에 적합하고 현재 브라운 계열과 차별화.
 
