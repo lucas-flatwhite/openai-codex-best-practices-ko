@@ -20,6 +20,8 @@
   --radius-sm: 4px;
   --radius-full: 9999px;
   --top-bar-height: 52px;
+  --content-width: 680px;
+  --page-gutter: 2rem;
 }
 
 [data-theme="dark"] {
@@ -72,12 +74,13 @@ body {
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   height: var(--top-bar-height);
+  padding: 0 var(--page-gutter);
 }
 
 .top-bar__inner {
-  max-width: 680px;
+  max-width: var(--content-width);
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0;
   height: 100%;
   display: flex;
   align-items: center;
@@ -150,11 +153,11 @@ body {
    Main Layout
    ============================================================ */
 .main {
-  padding: 0 2rem;
+  padding: 0 var(--page-gutter);
 }
 
 .article {
-  max-width: 680px;
+  max-width: var(--content-width);
   margin: 0 auto;
   padding: 3.5rem 0 6rem;
 }
@@ -400,11 +403,11 @@ tr:last-child td {
    ============================================================ */
 .footer {
   border-top: 1px solid var(--border);
-  padding: 2rem;
+  padding: 2rem var(--page-gutter);
 }
 
 .footer__inner {
-  max-width: 680px;
+  max-width: var(--content-width);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -476,6 +479,10 @@ tr:last-child td {
    Responsive
    ============================================================ */
 @media (max-width: 768px) {
+  :root {
+    --page-gutter: 1.25rem;
+  }
+
   body {
     font-size: 1rem;
   }
@@ -483,35 +490,24 @@ tr:last-child td {
   .hero__title {
     font-size: 2.25rem;
   }
-
-  .main {
-    padding: 0 1.25rem;
-  }
-
-  .top-bar__inner {
-    padding: 0 1.25rem;
-  }
-
   .footer {
-    padding: 1.5rem 1.25rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
+  :root {
+    --page-gutter: 1rem;
+  }
+
   .hero__title {
     font-size: 1.875rem;
   }
 
-  .main {
-    padding: 0 1rem;
-  }
-
-  .top-bar__inner {
-    padding: 0 1rem;
-  }
-
   .footer {
-    padding: 1.25rem 1rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
   }
 
   .back-to-top {
