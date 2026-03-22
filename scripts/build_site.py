@@ -23,6 +23,8 @@ class Page:
     output: Path
     nav_label: str
     description: str
+    hero_title: str | None = None
+    hero_subtitle: str | None = None
 
 
 PAGES = [
@@ -34,6 +36,8 @@ PAGES = [
             "OpenAI Codex Best Practices 한국어 문서를 읽기 편한 단일 페이지 형태로 "
             "제공하는 GitHub Pages 사이트입니다."
         ),
+        hero_title="Best Practices",
+        hero_subtitle="Codex를 더 잘 쓰기 위한 검증된 실전 가이드",
     ),
     Page(
         source=DOCS_DIR / "designing-delightful-frontends-with-gpt-5-4.ko.md",
@@ -359,8 +363,12 @@ def render_page(page: Page, markdown_text: str) -> str:
     title, subtitle, source_url, body_lines = extract_metadata(markdown_text.splitlines())
     article_html = render_markdown("\n".join(body_lines))
     built_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
-    safe_title = html.escape(title or page.nav_label)
-    safe_subtitle = keep_last_words_together(subtitle) if subtitle else ""
+    page_title = title or page.nav_label
+    hero_title = page.hero_title or page_title
+    hero_subtitle = page.hero_subtitle if page.hero_subtitle is not None else subtitle
+    safe_title = html.escape(page_title)
+    safe_hero_title = html.escape(hero_title)
+    safe_subtitle = keep_last_words_together(hero_subtitle) if hero_subtitle else ""
     source_link = html.escape(source_url, quote=True)
     local_copy_link = html.escape(
         relative_href(page.output, Path(page.source.name)),
@@ -429,7 +437,7 @@ def render_page(page: Page, markdown_text: str) -> str:
     <main class="main">
       <article class="article">
         <div class="hero">
-          <h1 class="hero__title">{safe_title}</h1>
+          <h1 class="hero__title">{safe_hero_title}</h1>
           {subtitle_html}
           <p class="hero__meta">
             원문:

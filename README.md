@@ -1,4 +1,4 @@
-[![GitHub last commit](https://img.shields.io/github/last-commit/lucas-flatwhite/openai-codex-best-practices-ko)](https://github.com/lucas-flatwhite/openai-codex-best-practices-ko/commits/main)
+[![Deploy](https://img.shields.io/github/actions/workflow/status/lucas-flatwhite/openai-codex-best-practices-ko/deploy.yml?branch=main&label=Deploy&logo=githubactions)](https://github.com/lucas-flatwhite/openai-codex-best-practices-ko/actions/workflows/deploy.yml)
 [![GitHub Pages](https://img.shields.io/github/deployments/lucas-flatwhite/openai-codex-best-practices-ko/github-pages?label=GitHub%20Pages&logo=github)](https://lucas-flatwhite.github.io/openai-codex-best-practices-ko/)
 
 # OpenAI Codex Docs in Korean
