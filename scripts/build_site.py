@@ -2,21 +2,57 @@
 from __future__ import annotations
 
 import html
+import os
 import re
 import shutil
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "docs" / "openai-codex-best-practices.ko.md"
 DIST = ROOT / "dist"
+DOCS_DIR = ROOT / "docs"
 ASSET_FILES = ["styles.css", "script.js"]
+
+
+@dataclass(frozen=True)
+class Page:
+    source: Path
+    output: Path
+    nav_label: str
+    badge: str
+    description: str
+
+
+PAGES = [
+    Page(
+        source=DOCS_DIR / "openai-codex-best-practices.ko.md",
+        output=Path("index.html"),
+        nav_label="Best Practices",
+        badge="OpenAI Codex",
+        description=(
+            "OpenAI Codex Best Practices 한국어 문서를 읽기 편한 단일 페이지 형태로 "
+            "제공하는 GitHub Pages 사이트입니다."
+        ),
+    ),
+    Page(
+        source=DOCS_DIR / "designing-delightful-frontends-with-gpt-5-4.ko.md",
+        output=Path("designing-delightful-frontends-with-gpt-5-4.html"),
+        nav_label="Delightful Frontends",
+        badge="GPT-5.4 Frontend",
+        description=(
+            "Designing delightful frontends with GPT-5.4 한국어 문서를 읽기 편한 "
+            "단일 페이지 형태로 제공하는 GitHub Pages 사이트입니다."
+        ),
+    ),
+]
 
 
 def slugify(text: str) -> str:
     text = re.sub(r"`([^`]+)`", r"\1", text)
+    text = re.sub(r"!\[(.*?)\]\(.*?\)", r"\1", text)
     text = re.sub(r"\[(.*?)\]\(.*?\)", r"\1", text)
     text = text.strip().lower()
     text = re.sub(r"[^\w\s가-힣-]", "", text, flags=re.UNICODE)
@@ -25,9 +61,19 @@ def slugify(text: str) -> str:
     return text.strip("-")
 
 
+def relative_href(from_output: Path, target_output: Path) -> str:
+    base_dir = DIST / from_output.parent
+    target_path = DIST / target_output
+    return Path(os.path.relpath(target_path, base_dir)).as_posix()
+
+
 def parse_inlines(text: str) -> str:
     pattern = re.compile(
-        r"`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*"
+        r"!\[([^\]]*)\]\(([^)]+)\)"
+        r"|`([^`]+)`"
+        r"|\[([^\]]+)\]\(([^)]+)\)"
+        r"|\*\*([^*]+)\*\*"
+        r"|\*([^*]+)\*"
     )
     parts: list[str] = []
     last = 0
@@ -35,14 +81,26 @@ def parse_inlines(text: str) -> str:
     for match in pattern.finditer(text):
         parts.append(html.escape(text[last : match.start()]))
 
-        code, link_text, href, strong_text, em_text = match.groups()
-        if code is not None:
+        (
+            image_alt,
+            image_src,
+            code,
+            link_text,
+            href,
+            strong_text,
+            em_text,
+        ) = match.groups()
+        if image_alt is not None and image_src is not None:
+            safe_alt = html.escape(image_alt, quote=True)
+            safe_src = html.escape(image_src, quote=True)
+            parts.append(
+                f'<img class="prose-image" src="{safe_src}" alt="{safe_alt}" loading="lazy" />'
+            )
+        elif code is not None:
             parts.append(f"<code>{html.escape(code)}</code>")
         elif link_text is not None and href is not None:
             safe_href = html.escape(href, quote=True)
-            parts.append(
-                f'<a href="{safe_href}">{parse_inlines(link_text)}</a>'
-            )
+            parts.append(f'<a href="{safe_href}">{parse_inlines(link_text)}</a>')
         elif strong_text is not None:
             parts.append(f"<strong>{parse_inlines(strong_text)}</strong>")
         elif em_text is not None:
@@ -173,13 +231,6 @@ def keep_last_words_together(text: str, count: int = 2) -> str:
     return f"{head} {tail}"
 
 
-def extract_section_number(text: str) -> str | None:
-    match = re.match(r"^(\d+)\.\s+", text)
-    if match:
-        return match.group(1)
-    return None
-
-
 def render_markdown(markdown: str) -> str:
     lines = markdown.splitlines()
     output: list[str] = []
@@ -214,11 +265,12 @@ def render_markdown(markdown: str) -> str:
             text = stripped[3:].strip()
             display_text = re.sub(r"^\d+\.\s+", "", text)
             badge = ""
-            skip_labels = {"목차", "요약"}
-            if display_text not in skip_labels:
+            if display_text not in {"목차", "요약"}:
                 section_counter += 1
                 badge = f'<span class="section-badge">{section_counter}</span>'
-            output.append(f'<h2 id="{slugify(text)}">{badge}{parse_inlines(display_text)}</h2>')
+            output.append(
+                f'<h2 id="{slugify(text)}">{badge}{parse_inlines(display_text)}</h2>'
+            )
             i += 1
             continue
 
@@ -235,7 +287,9 @@ def render_markdown(markdown: str) -> str:
 
         if stripped.startswith("|") and i + 1 < len(lines):
             separator = lines[i + 1].strip()
-            if separator.startswith("|") and set(separator.replace("|", "").strip()) <= {"-", ":", " "}:
+            if separator.startswith("|") and set(
+                separator.replace("|", "").strip()
+            ) <= {"-", ":", " "}:
                 block, i = parse_table(lines, i)
                 output.append(block)
                 continue
@@ -291,15 +345,38 @@ def extract_metadata(lines: list[str]) -> tuple[str, str, str, list[str]]:
     return title, subtitle, source_url, remaining
 
 
-def render_page(markdown_text: str) -> str:
+def render_docs_nav(current_page: Page) -> str:
+    links: list[str] = []
+    for page in PAGES:
+        href = html.escape(relative_href(current_page.output, page.output), quote=True)
+        active_class = " is-active" if page == current_page else ""
+        current_attr = ' aria-current="page"' if page == current_page else ""
+        links.append(
+            f'<a class="docs-nav__link{active_class}" href="{href}"'
+            f'{current_attr}>{html.escape(page.nav_label)}</a>'
+        )
+    return "\n".join(links)
+
+
+def render_page(page: Page, markdown_text: str) -> str:
     title, subtitle, source_url, body_lines = extract_metadata(markdown_text.splitlines())
-    body_markdown = "\n".join(body_lines)
-    article_html = render_markdown(body_markdown)
+    article_html = render_markdown("\n".join(body_lines))
     built_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
-    safe_title = html.escape(title or "OpenAI Codex Best Practices")
-    safe_subtitle = keep_last_words_together(subtitle)
+    safe_title = html.escape(title or page.nav_label)
+    safe_subtitle = keep_last_words_together(subtitle) if subtitle else ""
     source_link = html.escape(source_url, quote=True)
-    local_copy_link = html.escape(f"./{SOURCE.name}", quote=True)
+    local_copy_link = html.escape(
+        relative_href(page.output, Path(page.source.name)),
+        quote=True,
+    )
+    styles_href = html.escape(relative_href(page.output, Path("styles.css")), quote=True)
+    script_href = html.escape(relative_href(page.output, Path("script.js")), quote=True)
+    home_href = html.escape(relative_href(page.output, PAGES[0].output), quote=True)
+    docs_nav = render_docs_nav(page)
+
+    subtitle_html = (
+        f'<p class="hero__subtitle">{safe_subtitle}</p>' if safe_subtitle else ""
+    )
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -307,10 +384,7 @@ def render_page(markdown_text: str) -> str:
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{safe_title}</title>
-    <meta
-      name="description"
-      content="OpenAI Codex Best Practices 한국어 문서를 읽기 편한 단일 페이지 형태로 제공하는 GitHub Pages 사이트입니다."
-    />
+    <meta name="description" content="{html.escape(page.description, quote=True)}" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
@@ -319,13 +393,13 @@ def render_page(markdown_text: str) -> str:
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
     />
-    <link rel="stylesheet" href="./styles.css" />
-    <script defer src="./script.js"></script>
+    <link rel="stylesheet" href="{styles_href}" />
+    <script defer src="{script_href}"></script>
   </head>
   <body>
     <header class="top-bar">
       <div class="top-bar__inner">
-        <span class="top-bar__title">{safe_title}</span>
+        <a class="top-bar__title" href="{home_href}">{safe_title}</a>
         <button
           class="theme-toggle"
           type="button"
@@ -349,15 +423,21 @@ def render_page(markdown_text: str) -> str:
       <div class="progress-bar" aria-hidden="true"></div>
     </header>
 
+    <nav class="docs-nav" aria-label="문서 이동">
+      <div class="docs-nav__inner">
+        {docs_nav}
+      </div>
+    </nav>
+
     <main class="main">
       <article class="article">
         <div class="hero">
-          <span class="hero__badge">OpenAI Codex</span>
+          <span class="hero__badge">{html.escape(page.badge)}</span>
           <h1 class="hero__title">{safe_title}</h1>
-          <p class="hero__subtitle">{safe_subtitle}</p>
+          {subtitle_html}
           <p class="hero__meta">
             원문:
-            <a href="{source_link}" target="_blank" rel="noreferrer">platform.openai.com</a>
+            <a href="{source_link}" target="_blank" rel="noreferrer">developers.openai.com</a>
             &nbsp;·&nbsp; 빌드: <time>{html.escape(built_at)}</time>
           </p>
         </div>
@@ -388,18 +468,30 @@ def render_page(markdown_text: str) -> str:
 """
 
 
-def main() -> None:
-    markdown_text = SOURCE.read_text(encoding="utf-8")
-    html_text = render_page(markdown_text)
+def copy_assets() -> None:
+    for asset_name in ASSET_FILES:
+        shutil.copy2(ROOT / asset_name, DIST / asset_name)
 
+    for markdown_file in DOCS_DIR.glob("*.md"):
+        shutil.copy2(markdown_file, DIST / markdown_file.name)
+
+
+def build_pages() -> None:
+    for page in PAGES:
+        markdown_text = page.source.read_text(encoding="utf-8")
+        html_text = render_page(page, markdown_text)
+        destination = DIST / page.output
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(html_text, encoding="utf-8")
+
+
+def main() -> None:
     if DIST.exists():
         shutil.rmtree(DIST)
     DIST.mkdir(exist_ok=True)
-    (DIST / "index.html").write_text(html_text, encoding="utf-8")
-    shutil.copy2(SOURCE, DIST / SOURCE.name)
 
-    for asset_name in ASSET_FILES:
-        shutil.copy2(ROOT / asset_name, DIST / asset_name)
+    copy_assets()
+    build_pages()
 
 
 if __name__ == "__main__":

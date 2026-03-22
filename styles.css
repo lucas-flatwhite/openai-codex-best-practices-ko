@@ -95,6 +95,11 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+a.top-bar__title:hover {
+  color: var(--foreground);
 }
 
 .progress-bar {
@@ -147,6 +152,67 @@ body {
 :root:not([data-theme="dark"]) .theme-toggle__icon--sun,
 [data-theme="dark"] .theme-toggle__icon--moon {
   display: flex;
+}
+
+/* ============================================================
+   Docs Nav
+   ============================================================ */
+.docs-nav {
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--page-gutter);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent-muted) 55%, transparent),
+      transparent
+    ),
+    var(--background);
+}
+
+.docs-nav__inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.9rem 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.docs-nav__inner::-webkit-scrollbar {
+  display: none;
+}
+
+.docs-nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background-color: color-mix(in srgb, var(--background) 88%, transparent);
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.docs-nav__link:hover {
+  color: var(--foreground);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  transform: translateY(-1px);
+}
+
+.docs-nav__link.is-active {
+  color: var(--accent-foreground);
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ============================================================
@@ -297,6 +363,17 @@ body {
 
 .prose a:hover {
   text-decoration-color: var(--accent);
+}
+
+.prose img,
+.prose-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--border);
+  background-color: var(--muted);
 }
 
 .prose ul,
@@ -490,6 +567,11 @@ tr:last-child td {
   .hero__title {
     font-size: 2.25rem;
   }
+
+  .docs-nav__inner {
+    padding: 0.75rem 0;
+  }
+
   .footer {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
