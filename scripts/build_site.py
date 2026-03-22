@@ -22,7 +22,6 @@ class Page:
     source: Path
     output: Path
     nav_label: str
-    badge: str
     description: str
 
 
@@ -31,7 +30,6 @@ PAGES = [
         source=DOCS_DIR / "openai-codex-best-practices.ko.md",
         output=Path("index.html"),
         nav_label="Best Practices",
-        badge="OpenAI Codex",
         description=(
             "OpenAI Codex Best Practices 한국어 문서를 읽기 편한 단일 페이지 형태로 "
             "제공하는 GitHub Pages 사이트입니다."
@@ -41,7 +39,6 @@ PAGES = [
         source=DOCS_DIR / "designing-delightful-frontends-with-gpt-5-4.ko.md",
         output=Path("designing-delightful-frontends-with-gpt-5-4.html"),
         nav_label="Delightful Frontends",
-        badge="GPT-5.4 Frontend",
         description=(
             "Designing delightful frontends with GPT-5.4 한국어 문서를 읽기 편한 "
             "단일 페이지 형태로 제공하는 GitHub Pages 사이트입니다."
@@ -432,7 +429,6 @@ def render_page(page: Page, markdown_text: str) -> str:
     <main class="main">
       <article class="article">
         <div class="hero">
-          <span class="hero__badge">{html.escape(page.badge)}</span>
           <h1 class="hero__title">{safe_title}</h1>
           {subtitle_html}
           <p class="hero__meta">

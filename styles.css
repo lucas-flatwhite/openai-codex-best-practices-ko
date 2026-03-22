@@ -235,19 +235,6 @@ a.top-bar__title:hover {
   padding-bottom: 2.5rem;
 }
 
-.hero__badge {
-  display: inline-block;
-  background-color: var(--accent);
-  color: var(--accent-foreground);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  margin-bottom: 1.25rem;
-}
-
 .hero__title {
   font-size: 3rem;
   font-weight: 800;
