@@ -36,7 +36,7 @@ PAGES = [
             "OpenAI Codex Best Practices 한국어 문서를 읽기 편한 단일 페이지 형태로 "
             "제공하는 GitHub Pages 사이트입니다."
         ),
-        hero_title="Best Practices",
+        hero_title="OpenAI Codex Best Practices",
         hero_subtitle="Codex를 더 잘 쓰기 위한 검증된 실전 가이드",
     ),
     Page(
