@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 DOCS_DIR = ROOT / "docs"
 ASSET_FILES = ["styles.css", "script.js"]
+DOC_ASSET_DIRS = ["media"]
 
 
 @dataclass(frozen=True)
@@ -141,6 +142,28 @@ def parse_table(lines: list[str], start: int) -> tuple[str, int]:
         "</div>",
     ]
     return "\n".join(table_html), i
+
+
+def parse_video_block(lines: list[str], start: int) -> tuple[str, int] | None:
+    match = re.match(r"^!VIDEO\[(.*?)\]\(([^)]+)\)$", lines[start].strip())
+    if not match:
+        return None
+
+    caption, src = match.groups()
+    safe_src = html.escape(src, quote=True)
+    figure = [
+        '<figure class="prose-video">',
+        (
+            '<video class="prose-video__player" controls playsinline preload="metadata">'
+            f'<source src="{safe_src}" type="video/mp4" />'
+            "브라우저가 video 태그를 지원하지 않습니다."
+            "</video>"
+        ),
+    ]
+    if caption:
+        figure.append(f"<figcaption>{parse_inlines(caption)}</figcaption>")
+    figure.append("</figure>")
+    return "\n".join(figure), start + 1
 
 
 def parse_list(lines: list[str], start: int, ordered: bool) -> tuple[str, int]:
@@ -294,6 +317,12 @@ def render_markdown(markdown: str) -> str:
                 block, i = parse_table(lines, i)
                 output.append(block)
                 continue
+
+        video_block = parse_video_block(lines, i)
+        if video_block is not None:
+            block, i = video_block
+            output.append(block)
+            continue
 
         if re.match(r"^\d+\.\s+", stripped):
             block, i = parse_list(lines, i, ordered=True)
@@ -478,6 +507,11 @@ def copy_assets() -> None:
 
     for markdown_file in DOCS_DIR.glob("*.md"):
         shutil.copy2(markdown_file, DIST / markdown_file.name)
+
+    for asset_dir_name in DOC_ASSET_DIRS:
+        source_dir = DOCS_DIR / asset_dir_name
+        if source_dir.exists():
+            shutil.copytree(source_dir, DIST / asset_dir_name, dirs_exist_ok=True)
 
 
 def build_pages() -> None:

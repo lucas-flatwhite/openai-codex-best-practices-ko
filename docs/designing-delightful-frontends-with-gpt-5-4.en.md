@@ -8,6 +8,8 @@ When prompts are underspecified, models often fall back to high-frequency patter
 
 This guide explains practical techniques for steering GPT-5.4 toward crafting the designs you envision.
 
+!VIDEO[Barbershop landing page demo](media/landing_barber.mp4)
+
 ## Model Improvements
 
 While GPT-5.4 improves across a [range of axes](https://openai.com/index/introducing-gpt-5-4/), for front-end work we focused on three practical gains:
