@@ -3,6 +3,19 @@
 
 # OpenAI Codex Docs in Korean
 
+> [!IMPORTANT]
+> **This repository is no longer updated.**
+>
+> I am always making projects that are more fun and more helpful. You can find them on [GitHub](https://github.com/lucas-flatwhite) and at [lucasflatwhite.com](https://lucasflatwhite.com).
+>
+> Thank you, always. — Lucas
+>
+> **이 저장소는 더 이상 업데이트되지 않습니다.**
+>
+> 더 재미있고 도움이 되는 프로젝트를 언제나 만들고 있습니다. [GitHub](https://github.com/lucas-flatwhite)과 [lucasflatwhite.com](https://lucasflatwhite.com)에서 만나보실 수 있습니다.
+>
+> 늘 감사드립니다. 루카스 드림.
+
 OpenAI의 Codex 관련 문서를 한국어로 정리하고, 읽기 쉬운 정적 웹페이지로 함께 제공하는 저장소입니다. 원문의 구조와 링크는 최대한 유지하면서 설명 텍스트는 한국어로 옮기고, GitHub Pages에서 바로 읽을 수 있도록 빌드합니다.
 
 사이트:
