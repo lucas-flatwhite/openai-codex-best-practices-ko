@@ -1,3 +1,6 @@
 /dist/
 /scripts/__pycache__/
 .DS_Store
+
+# Superpowers docs
+docs/superpowers/
